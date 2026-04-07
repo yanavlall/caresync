@@ -1,0 +1,76 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: caresync-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: dev
+      MYSQL_DATABASE: caresync
+    command:
+      - --default-authentication-plugin=caching_sha2_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d:ro
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pdev"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 15s
+
+  backend:
+    build:
+      context: ./backend
+    container_name: caresync-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      MYSQL_USER: root
+      MYSQL_PASSWORD: dev
+      MYSQL_DATABASE: caresync
+      MYSQL_POOL_SIZE: "10"
+      MAX_CONCURRENT_JOBS: "4"
+      CORS_ORIGINS: "http://localhost:3000"
+      ASR_BACKEND: "${ASR_BACKEND:-mock}"
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      ANTHROPIC_MODEL: "${ANTHROPIC_MODEL:-claude-sonnet-4-5}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  # The frontend is a webpack dev server. For most development we run it on
+  # the host with `cd frontend && npm install && npm start` (faster HMR, no
+  # volume-mount gotchas). This service is provided for a fully containerized
+  # demo; enable it with `docker compose --profile frontend up`.
+  frontend:
+    image: node:20-alpine
+    container_name: caresync-frontend
+    profiles: ["frontend"]
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    environment:
+      REACT_APP_API_URL: "http://localhost:8000"
+    command: sh -c "npm install && npm start -- --host 0.0.0.0"
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  db_data:

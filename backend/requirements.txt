@@ -1,0 +1,9 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+aiomysql==0.2.0
+pydantic==2.9.2
+anthropic==0.39.0
+# ASR backends (install only the one you want to use):
+# openai==1.51.0
+# faster-whisper==1.0.3

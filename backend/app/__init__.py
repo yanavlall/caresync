@@ -1,0 +1,1 @@
+"""CareSync backend application package."""

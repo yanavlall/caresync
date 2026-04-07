@@ -186,6 +186,3 @@ caresync/
 └── .gitignore
 ```
 
-## License
-
-MIT. See [`LICENSE`](LICENSE).

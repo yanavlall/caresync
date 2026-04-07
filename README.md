@@ -5,7 +5,6 @@
 ![status](https://img.shields.io/badge/status-prototype-blue)
 ![python](https://img.shields.io/badge/python-3.12-blue)
 ![mysql](https://img.shields.io/badge/mysql-8.4-blue)
-![license](https://img.shields.io/badge/license-MIT-green)
 
 ## What's in here
 

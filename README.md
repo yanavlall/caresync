@@ -14,7 +14,6 @@
 - **Plain-SQL analytics** for chart-close latency, FULLTEXT search over transcripts, gap-and-islands hypoxia detection, data-quality checks, and a cross-check of LLM-extracted vitals against the measured vitals stream.
 - **Claude tool-use extraction** with a regex fallback so the whole system runs end-to-end with no API keys in CI.
 
-See [`report/writeup.md`](report/writeup.md) for the longer-form project writeup and [`CONTRIBUTING.md`](CONTRIBUTING.md) for dev setup details.
 
 ## Architecture
 
